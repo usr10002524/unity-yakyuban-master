@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// スコアボードコントローラ
+/// </summary>
 public class ScoreBoardController : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI firstNameText;
@@ -19,11 +22,18 @@ public class ScoreBoardController : MonoBehaviour
     private ScoreBoardInningController totalController;
 
 
+    /// <summary>
+    ///  スコアボードの表示・非表示を切り替える
+    /// </summary>
+    /// <param name="flag">trueのときは表示、falseのときは非表示</param>
     public void Show(bool flag)
     {
         gameObject.SetActive(flag);
     }
 
+    /// <summary>
+    /// 食器カジノ処理
+    /// </summary>
     public void OnInit()
     {
         RedrawTeamName();
@@ -74,12 +84,18 @@ public class ScoreBoardController : MonoBehaviour
         Show(false);
     }
 
+    /// <summary>
+    /// 再描画時の処理
+    /// </summary>
     public void OnRedraw()
     {
         RedrawTeamName();
         RedrawScoreBoard();
     }
 
+    /// <summary>
+    /// チーム名の再描画
+    /// </summary>
     private void RedrawTeamName()
     {
         if (firstNameText != null)
@@ -92,6 +108,9 @@ public class ScoreBoardController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// スコアボードの再描画
+    /// </summary>
     private void RedrawScoreBoard()
     {
         int innings = GameManager.Instance.GetInnings();
@@ -157,6 +176,12 @@ public class ScoreBoardController : MonoBehaviour
         RedrawTotal();
     }
 
+    /// <summary>
+    /// スコアを再描画
+    /// </summary>
+    /// <param name="inning">イニング数</param>
+    /// <param name="firstScoreText">先攻のスコア（文字列）</param>
+    /// <param name="secondScoreText">後攻のスコア（文字列）</param>
     private void RedrawScore(int inning, string firstScoreText, string secondScoreText)
     {
         if (inning < inningControllers.Count)
@@ -168,6 +193,9 @@ public class ScoreBoardController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 合計点の再描画
+    /// </summary>
     private void RedrawTotal()
     {
         Score score = GameManager.Instance.GetScore();

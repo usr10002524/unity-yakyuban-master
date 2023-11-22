@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// ボールコントローラ
+/// </summary>
 public class BallController : MonoBehaviour
 {
     /// <summary>

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// チーム名をランダムで生成する
+/// </summary>
 public class RandomName
 {
     /// <summary>

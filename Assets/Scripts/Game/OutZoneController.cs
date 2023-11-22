@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ヒットゾーンクラス
+/// アウトゾーンクラス
 /// </summary>
 public class OutZoneController : MonoBehaviour, IHitResult
 {
