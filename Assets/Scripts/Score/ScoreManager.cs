@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 
@@ -16,6 +17,10 @@ public class ScoreManager : MonoBehaviour
     /// スコア加算パネルのプレファブ
     /// </summary>
     [SerializeField] private GameObject addScorePrefab;
+    /// <summary>
+    /// スコア表示用GUI
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI scoreText;
 
     /// <summary>
     /// スコアデータリスト
@@ -25,6 +30,7 @@ public class ScoreManager : MonoBehaviour
     /// 加算するスコアデータのゲームオブジェクト
     /// </summary>
     GameObject addScoreObject;
+
 
     /// <summary>
     /// 表示中スコア
@@ -61,6 +67,14 @@ public class ScoreManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Start
+    /// </summary>
+    private void Start()
+    {
+        DrawScore();
+    }
+
+    /// <summary>
     /// Update
     /// </summary>
     private void Update()
@@ -92,6 +106,7 @@ public class ScoreManager : MonoBehaviour
         int beforeScore = 0;
         int afterScore = 0;
         ApplyInfo(data, ref beforeScore, ref afterScore);
+        DrawScore();
     }
 
     /// <summary>
@@ -159,6 +174,11 @@ public class ScoreManager : MonoBehaviour
     public int GetActualScore()
     {
         return actualScore;
+    }
+
+    private void DrawScore()
+    {
+        scoreText?.SetText(score.ToString());
     }
 
     /// <summary>

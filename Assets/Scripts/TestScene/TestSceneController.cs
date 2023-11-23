@@ -172,6 +172,7 @@ public class TestSceneController : MonoBehaviour
     /// </summary>
     public void SaveData()
     {
+#if false
         // if (!AtsumaruAPI.Instance.IsValid())
         // {
         //     return;
@@ -211,6 +212,100 @@ public class TestSceneController : MonoBehaviour
             string json = JsonUtility.ToJson(serverDataItems);
             Debug.Log(string.Format("{0}", json));
             AtsumaruAPI.Instance.SaveServerData(json);
+        }
+#else
+        if (AtsumaruAPI.Instance.IsValid())
+        {
+            SaveWithAtsumaruAPI();
+        }
+        else
+        {
+            SaveWithNoAtsumaruAPI();
+        }
+#endif
+    }
+
+    /// <summary>
+    /// AtumaruAPIを使用してデータを保存する
+    /// </summary>
+    private void SaveWithAtsumaruAPI()
+    {
+        int score = ToScore();
+
+        // スコアを保存
+        {
+            AtsumaruAPI.Instance.SaveScore(inning, score);
+        }
+
+        // 自己ベストを記録し、保存
+        {
+            GameManager gameManager = GameManager.Instance;
+
+            string ownTeamName = teamName.GetFirstTeam();
+            string otherTeamName = teamName.GetSecondTeam();
+
+            long unixTime = EpochTime.ToUnixTime(dateTime);
+
+            // 自己ベストを更新
+            RecordData recordData = new RecordData(ownTeamName, otherTeamName, score, unixTime);
+            RecordManager.Instance.AddData(inning, recordData);
+
+            MyRecords myRecords = RecordManager.Instance.Create();
+
+            AtsumaruAPI.ServerDataItems serverDataItems = new AtsumaruAPI.ServerDataItems();
+            serverDataItems.data = new AtsumaruAPI.DataItem[1];
+
+            AtsumaruAPI.DataItem item = new AtsumaruAPI.DataItem();
+            item.key = MyRecords.key;
+            item.value = JsonUtility.ToJson(myRecords);
+            Debug.Log(string.Format("SaveWithAtsumaruAPI {0}", item.value));
+            serverDataItems.data[0] = item;
+
+            string json = JsonUtility.ToJson(serverDataItems);
+            Debug.Log(string.Format("SaveWithAtsumaruAPI {0}", json));
+            AtsumaruAPI.Instance.SaveServerData(json);
+        }
+    }
+
+    /// <summary>
+    /// AtsumaruAPIを使用せずデータを保存する
+    /// </summary>
+    private void SaveWithNoAtsumaruAPI()
+    {
+        int score = ToScore();
+
+        // スコアを保存
+        {
+            // なにもしない
+        }
+
+        // 自己ベストを記録し、保存
+        {
+            GameManager gameManager = GameManager.Instance;
+
+            string ownTeamName = teamName.GetFirstTeam();
+            string otherTeamName = teamName.GetSecondTeam();
+
+            long unixTime = EpochTime.ToUnixTime(dateTime);
+
+            // 自己ベストを更新
+            RecordData recordData = new RecordData(ownTeamName, otherTeamName, score, unixTime);
+            RecordManager.Instance.AddData(inning, recordData);
+
+            MyRecords myRecords = RecordManager.Instance.Create();
+
+            AtsumaruAPI.ServerDataItems serverDataItems = new AtsumaruAPI.ServerDataItems();
+            serverDataItems.data = new AtsumaruAPI.DataItem[1];
+
+            AtsumaruAPI.DataItem item = new AtsumaruAPI.DataItem();
+            item.key = MyRecords.key;
+            item.value = JsonUtility.ToJson(myRecords);
+            Debug.Log(string.Format("SaveWithNoAtsumaruAPI {0}", item.value));
+            serverDataItems.data[0] = item;
+
+            string json = JsonUtility.ToJson(serverDataItems);
+            Debug.Log(string.Format("SaveWithNoAtsumaruAPI {0}", json));
+            LocalStorageAPI.Instance.SaveLocalData(json);
         }
     }
 

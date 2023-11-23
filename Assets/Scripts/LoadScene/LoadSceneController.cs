@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms;
 
 /// <summary>
 /// LoadScene制御クラス
@@ -52,7 +53,16 @@ public class LoadSceneController : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("TitleScene");
+            if (LocalStorageAPI.Instance.LoadLocalData())
+            {
+                SetText(0);
+                loadingText.gameObject.SetActive(true);
+                StartCoroutine(LoadingCoroutine());
+            }
+            else
+            {
+                SceneManager.LoadScene("TitleScene");
+            }
         }
     }
 
@@ -100,21 +110,50 @@ public class LoadSceneController : MonoBehaviour
             }
         }
 
-        if (AtsumaruAPI.Instance.IsServerDataLoaded())
+        if (AtsumaruAPI.Instance.IsValid())
         {
-            string json = AtsumaruAPI.Instance.GetServerDataJson();
-            AtsumaruAPI.ServerDataItems serverDataItems = JsonUtility.FromJson<AtsumaruAPI.ServerDataItems>(json);
-            // Debug.Log(json);
-            foreach (var item in serverDataItems.data)
+            if (AtsumaruAPI.Instance.IsServerDataLoaded())
             {
-                if (item.key == MyRecords.key)
+                string json = AtsumaruAPI.Instance.GetServerDataJson();
+                // Debug.Log(json);
+                AtsumaruAPI.ServerDataItems serverDataItems = JsonUtility.FromJson<AtsumaruAPI.ServerDataItems>(json);
+                if (serverDataItems != null && serverDataItems.data != null)
                 {
-                    // Debug.Log(item.value);
-                    MyRecords myRecords = JsonUtility.FromJson<MyRecords>(item.value);
-                    RecordManager.Instance.Restore(myRecords);
+                    foreach (var item in serverDataItems.data)
+                    {
+                        if (item.key == MyRecords.key)
+                        {
+                            // Debug.Log(item.value);
+                            MyRecords myRecords = JsonUtility.FromJson<MyRecords>(item.value);
+                            RecordManager.Instance.Restore(myRecords);
+                        }
+                    }
                 }
             }
 
+            SetCompleteText();
+            yield return new WaitForSeconds(displayCompleteTime);
+        }
+        else
+        {
+            if (LocalStorageAPI.Instance.IsLocalDataLoaded())
+            {
+                string json = LocalStorageAPI.Instance.GetLocalDataJson();
+                // Debug.Log(json);
+                AtsumaruAPI.ServerDataItems serverDataItems = JsonUtility.FromJson<AtsumaruAPI.ServerDataItems>(json);
+                if (serverDataItems != null && serverDataItems.data != null)
+                {
+                    foreach (var item in serverDataItems.data)
+                    {
+                        if (item.key == MyRecords.key)
+                        {
+                            // Debug.Log(item.value);
+                            MyRecords myRecords = JsonUtility.FromJson<MyRecords>(item.value);
+                            RecordManager.Instance.Restore(myRecords);
+                        }
+                    }
+                }
+            }
             SetCompleteText();
             yield return new WaitForSeconds(displayCompleteTime);
         }
@@ -128,9 +167,19 @@ public class LoadSceneController : MonoBehaviour
     /// <returns>ロード中の場合はtrue、そうでない場合はfalseを返す</returns>
     private bool CheckLoadComplete()
     {
-        if (!AtsumaruAPI.Instance.IsServerDataLoaded())
+        if (AtsumaruAPI.Instance.IsValid())
         {
-            return false;
+            if (!AtsumaruAPI.Instance.IsServerDataLoaded())
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!LocalStorageAPI.Instance.IsLocalDataLoaded())
+            {
+                return false;
+            }
         }
 
         return true;

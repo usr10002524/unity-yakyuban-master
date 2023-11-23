@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 using Angle = UnityUtility.Angle;
 
 /// <summary>
@@ -199,6 +199,11 @@ public class BatterController : MonoBehaviour
     {
         if (controlByPlayer)
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return false;
+            }
+
             // プレーヤー操作中は入力を見る
             bool input = Input.GetMouseButton(0);
             input |= Input.GetKey(KeyCode.Space);

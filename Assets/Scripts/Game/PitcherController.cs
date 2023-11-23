@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
@@ -249,6 +250,11 @@ public class PitcherController : MonoBehaviour
     {
         if (controlByPlayer)
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return false;
+            }
+
             // プレーヤーの場合は入力を見る
             bool input = Input.GetMouseButton(0);
             input |= Input.GetKey(KeyCode.Space);
@@ -269,6 +275,11 @@ public class PitcherController : MonoBehaviour
     {
         if (controlByPlayer)
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return false;
+            }
+
             bool input = Input.GetMouseButtonUp(0);
             input |= Input.GetKeyUp(KeyCode.Space);
 
